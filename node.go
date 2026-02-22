@@ -8,6 +8,7 @@ import (
 	"runtime"
 
 	"github.com/auroradevllc/apiclient"
+	"github.com/auroradevllc/apiclient/multipart"
 	"github.com/auroradevllc/handler"
 	"github.com/orcaman/concurrent-map/v2"
 	log "github.com/sirupsen/logrus"
@@ -246,7 +247,17 @@ func (n *Node) request(method, uri string, body any) (*apiclient.Response, error
 	}
 
 	if body != nil {
-		opts = append(opts, apiclient.WithJSON(body))
+		if mr, ok := body.(*multipart.Streamer); ok {
+			log.Debug("Request is a multipart stream")
+			opts = append(opts,
+				apiclient.WithHeader(apiclient.HeaderContentType, mr.ContentType()),
+				apiclient.WithHeader(apiclient.HeaderContentLength, mr.LenString()),
+				apiclient.WithBody(body),
+			)
+		} else {
+			log.Debug("Sending as JSON")
+			opts = append(opts, apiclient.WithJSON(body))
+		}
 	}
 
 	req, err := n.client.NewRequest(n.baseAddress+"/"+uri, opts...)
