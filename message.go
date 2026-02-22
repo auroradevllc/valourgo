@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Message struct {
@@ -24,11 +26,14 @@ type Message struct {
 }
 
 type SendMessageData struct {
-	AuthorMemberID MemberID   `json:"authorMemberId"`
-	PlanetID       PlanetID   `json:"planetId"`
-	ChannelID      ChannelID  `json:"channelId"`
-	ReplyToID      *MessageID `json:"replyToId"`
-	Content        string     `json:"content"`
+	AuthorMemberID  MemberID   `json:"authorMemberId"`
+	PlanetID        PlanetID   `json:"planetId"`
+	ChannelID       ChannelID  `json:"channelId"`
+	ReplyToID       *MessageID `json:"replyToId"`
+	Content         string     `json:"content"`
+	Attachments     any        `json:"attachments"`
+	AttachmentsData string     `json:"attachmentsData"`
+	Fingerprint     string     `json:"fingerprint"`
 }
 
 type EditMessageData struct {
@@ -84,6 +89,14 @@ func (n *Node) SendMessage(planetID PlanetID, channelID ChannelID, content strin
 func (n *Node) SendMessageComplex(planetID PlanetID, channelID ChannelID, send SendMessageData) (*Message, error) {
 	send.PlanetID = planetID
 	send.ChannelID = channelID
+
+	u, err := uuid.NewV7()
+
+	if err != nil {
+		return nil, err
+	}
+
+	send.Fingerprint = u.String()
 
 	if send.AuthorMemberID == 0 {
 		myMember, err := n.MyMember(planetID)

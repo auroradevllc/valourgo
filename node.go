@@ -1,17 +1,13 @@
 package valourgo
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"runtime"
-	"strconv"
-	"strings"
 
+	"github.com/auroradevllc/apiclient"
 	"github.com/auroradevllc/handler"
 	"github.com/orcaman/concurrent-map/v2"
 	log "github.com/sirupsen/logrus"
@@ -26,7 +22,7 @@ var (
 
 type Node struct {
 	*handler.Handler
-	client         *http.Client
+	client         *apiclient.Client
 	baseAddress    string
 	token          string
 	rtc            *RTC
@@ -48,16 +44,11 @@ func WithNodeHandler(h *handler.Handler) NodeOption {
 }
 
 func NewNode(baseAddress, name, token string, opts ...NodeOption) (*Node, error) {
-	client := &http.Client{
-		Transport: &headerRoundTripper{
-			headers: http.Header{
-				"X-Server-Select": {name},
-				"Authorization":   {token},
-				"User-Agent":      {"Valour-Go (" + runtime.Version() + ")"},
-			},
-			rt: http.DefaultTransport,
-		},
-	}
+	client := apiclient.NewClient(
+		apiclient.WithHeader("X-Server-Select", name),
+		apiclient.WithHeader("Authorization", token),
+		apiclient.WithHeader("User-Agent", "Valour-Go ("+runtime.Version()+")"),
+	)
 
 	n := &Node{
 		client:         client,
@@ -243,40 +234,28 @@ func (n *Node) Close() error {
 	return wg.Wait()
 }
 
-func (n *Node) request(method, uri string, body any) (*http.Response, error) {
-	var r io.Reader
-	var bodyLen int
-
-	if body != nil {
-		b, err := json.Marshal(body)
-
-		if err != nil {
-			return nil, err
-		}
-
-		bodyLen = len(b)
-
-		r = bytes.NewReader(b)
-	}
-
+func (n *Node) request(method, uri string, body any) (*apiclient.Response, error) {
 	log.WithFields(log.Fields{
 		"node":   n.Name,
 		"method": method,
 		"uri":    n.baseAddress + "/" + uri,
 	}).Debug("Sending request to node")
 
-	req, err := http.NewRequest(method, n.baseAddress+"/"+uri, r)
+	opts := []apiclient.Option{
+		apiclient.WithMethod(method),
+	}
+
+	if body != nil {
+		opts = append(opts, apiclient.WithJSON(body))
+	}
+
+	req, err := n.client.NewRequest(n.baseAddress+"/"+uri, opts...)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if r != nil {
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("Content-Length", strconv.Itoa(bodyLen))
-	}
-
-	res, err := n.client.Do(req)
+	res, err := req.Send()
 
 	if err != nil {
 		return nil, err
@@ -292,9 +271,7 @@ func (n *Node) requestBytes(method, uri string, body any) ([]byte, error) {
 		return nil, err
 	}
 
-	defer res.Body.Close()
-
-	return io.ReadAll(res.Body)
+	return res.Bytes()
 }
 
 func (n *Node) requestJSON(method, uri string, body any, dest any) error {
@@ -304,22 +281,5 @@ func (n *Node) requestJSON(method, uri string, body any, dest any) error {
 		return err
 	}
 
-	defer res.Body.Close()
-
-	contentType := res.Header.Get("Content-Type")
-
-	if idx := strings.Index(contentType, ";"); idx != -1 {
-		contentType = contentType[:idx]
-	}
-
-	switch contentType {
-	case "application/json":
-		if err = json.NewDecoder(res.Body).Decode(dest); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("%v: %s", ErrInvalidResponseType, contentType)
-	}
-
-	return nil
+	return res.Unmarshal(&dest)
 }
