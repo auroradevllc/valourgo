@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	baseClientAddress    = "https://app.valour.gg"
+	baseClientAddress    = "https://api.valour.gg"
 	apiBase              = "api"
 	apiPlanetBase        = apiBase + "/planets"
 	apiMessageBase       = apiBase + "/messages"
