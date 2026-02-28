@@ -3,10 +3,6 @@ package valourgo
 import "net/http"
 
 func (n *Node) MyMember(planetID PlanetID) (*Member, error) {
-	if val, exists := n.members.Get(planetID); exists {
-		return &val, nil
-	}
-
 	me, err := n.Me()
 
 	if err != nil {
@@ -18,8 +14,6 @@ func (n *Node) MyMember(planetID PlanetID) (*Member, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	n.members.Set(planetID, *member)
 
 	return member, nil
 }

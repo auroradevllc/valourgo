@@ -55,7 +55,6 @@ func NewNode(baseAddress, name, token string, opts ...NodeOption) (*Node, error)
 		client:         client,
 		token:          token,
 		baseAddress:    baseAddress,
-		members:        cmap.NewStringer[PlanetID, Member](),
 		planetNodeList: cmap.NewStringer[PlanetID, string](),
 		Name:           name,
 	}
@@ -290,6 +289,10 @@ func (n *Node) requestJSON(method, uri string, body any, dest any) error {
 
 	if err != nil {
 		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("got status code %d", res.StatusCode)
 	}
 
 	return res.Unmarshal(&dest)

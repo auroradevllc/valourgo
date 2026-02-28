@@ -47,21 +47,87 @@ func (m *Message) decodeAttachments() error {
 }
 
 type SendMessageData struct {
-	AuthorMemberID  MemberID             `json:"authorMemberId"`
-	PlanetID        PlanetID             `json:"planetId"`
-	ChannelID       ChannelID            `json:"channelId"`
-	ReplyToID       *MessageID           `json:"replyToId"`
-	Content         string               `json:"content"`
-	Attachments     []*MessageAttachment `json:"attachments,omitempty"`
-	AttachmentsData string               `json:"attachmentsData,omitempty"`
-	EmbedData       string               `json:"embedData,omitempty"`
-	Fingerprint     string               `json:"fingerprint"`
+	AuthorMemberID MemberID             `json:"authorMemberId"`
+	PlanetID       PlanetID             `json:"planetId"`
+	ChannelID      ChannelID            `json:"channelId"`
+	ReplyToID      *MessageID           `json:"replyToId"`
+	Content        string               `json:"content"`
+	Attachments    []*MessageAttachment `json:"attachments,omitempty"`
+	Embed          *Embed               `json:"-"`
+	Fingerprint    string               `json:"fingerprint"`
+}
+
+// MarshalJSON marshals necessary options of a message send
+// This serializes Embed and Attachments
+func (s SendMessageData) MarshalJSON() ([]byte, error) {
+	type Alias SendMessageData
+
+	var embedData string
+
+	if s.Embed != nil {
+		b, err := json.Marshal(s.Embed)
+
+		if err != nil {
+			return nil, err
+		}
+
+		embedData = string(b)
+	}
+
+	var attachmentsData string
+
+	if len(s.Attachments) > 0 {
+		b, err := json.Marshal(s.Attachments)
+
+		if err != nil {
+			return nil, err
+		}
+
+		attachmentsData = string(b)
+	}
+
+	return json.Marshal(struct {
+		Alias
+		AttachmentsData string `json:"attachmentsData"`
+		EmbedData       string `json:"embedData"`
+	}{
+		Alias:           Alias(s),
+		AttachmentsData: attachmentsData,
+		EmbedData:       embedData,
+	})
 }
 
 type EditMessageData struct {
 	ID       MessageID `json:"id"`
 	PlanetID PlanetID  `json:"planetId"`
 	Content  *string   `json:"content"`
+	Embed    *Embed    `json:"-"`
+}
+
+// MarshalJSON marshals necessary options of a message send
+// This serializes Embed and Attachments
+func (e EditMessageData) MarshalJSON() ([]byte, error) {
+	type Alias EditMessageData
+
+	var embedData *string
+
+	if e.Embed != nil {
+		b, err := json.Marshal(e.Embed)
+
+		if err != nil {
+			return nil, err
+		}
+
+		embedData = Ref(string(b))
+	}
+
+	return json.Marshal(struct {
+		Alias
+		EmbedData *string `json:"EmbedData"`
+	}{
+		Alias:     Alias(e),
+		EmbedData: embedData,
+	})
 }
 
 // Messages retrieves the latest x messages
@@ -193,16 +259,6 @@ func (n *Node) SendMessageComplex(planetID PlanetID, channelID ChannelID, send S
 
 	if err != nil {
 		return nil, err
-	}
-
-	if len(send.Attachments) > 0 {
-		b, err := json.Marshal(send.Attachments)
-
-		if err != nil {
-			return nil, err
-		}
-
-		send.AttachmentsData = string(b)
 	}
 
 	send.Fingerprint = u.String()
