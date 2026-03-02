@@ -75,12 +75,18 @@ func (r *RTC) defaultHandler(target string, args []json.RawMessage) {
 		decodeAndCall[MessageCreateEvent](args[0], r.handler)
 	case "RelayEdit":
 		decodeAndCall[MessageEditEvent](args[0], r.handler)
+	case "DeleteMessage":
+		decodeAndCall[MessageDeleteEvent](args[0], r.handler)
 	case "Channel-Watching-Update":
 		decodeAndCall[ChannelWatchingUpdate](args[0], r.handler)
 	case "Channel-CurrentlyTyping-Update":
 		decodeAndCall[ChannelCurrentlyTypingUpdate](args[0], r.handler)
 	case "PlanetMember-Update":
 		decodeAndCall[PlanetMemberUpdate](args[0], r.handler)
+	case "MessageReactionAdd":
+		decodeAndCall[MessageReactionAddedEvent](args[0], r.handler)
+	case "MessageReactionRemove":
+		decodeAndCall[MessageReactionRemovedEvent](args[0], r.handler)
 	default:
 		log.WithField("target", target).Debug("No handler registered for target")
 	}

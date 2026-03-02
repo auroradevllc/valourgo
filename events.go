@@ -28,10 +28,29 @@ type MessageEditEvent struct {
 	Message
 }
 
+type MessageDeleteEvent struct {
+	Message
+}
+
 type UserUpdateEvent struct {
 	User
 }
 
 type PlanetMemberUpdate struct {
 	Member
+}
+
+type MessageReactionEvent struct {
+	MessageID MessageID `json:"messageId"`
+	UserID    UserID    `json:"authorUserId"`
+	MemberID  MemberID  `json:"authorMemberId"`
+	Emoji     string    `json:"emoji"`
+}
+
+type MessageReactionAddedEvent struct {
+	MessageReactionEvent
+}
+
+type MessageReactionRemovedEvent struct {
+	MessageReactionEvent
 }
