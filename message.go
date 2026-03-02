@@ -300,6 +300,44 @@ func (n *Node) SendMessageComplex(planetID PlanetID, channelID ChannelID, send S
 	return &m, nil
 }
 
+type reactionBody struct {
+	Emoji string `json:"emoji"`
+}
+
+// MessageReactionAdd adds a reaction to a message
+func (n *Node) MessageReactionAdd(id MessageID, emoji string) error {
+	res, err := n.request(http.MethodPost, id.Route("reactions", "add"), reactionBody{Emoji: emoji})
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("unknown status %d", res.StatusCode)
+	}
+
+	return nil
+}
+
+// MessageReactionRemove removes a reaction from a message
+func (n *Node) MessageReactionRemove(id MessageID, emoji string) error {
+	res, err := n.request(http.MethodPost, id.Route("reactions", "remove"), reactionBody{Emoji: emoji})
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("unknown status %d", res.StatusCode)
+	}
+
+	return nil
+}
+
 // intMin is a simple math.Min for integers
 func intMin(a, b int) int {
 	if a < b {
