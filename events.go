@@ -40,6 +40,10 @@ type PlanetMemberUpdate struct {
 	Member
 }
 
+type PlanetMemberDelete struct {
+	Member
+}
+
 type MessageReactionEvent struct {
 	MessageID MessageID `json:"messageId"`
 	UserID    UserID    `json:"authorUserId"`

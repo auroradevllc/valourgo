@@ -83,6 +83,8 @@ func (r *RTC) defaultHandler(target string, args []json.RawMessage) {
 		decodeAndCall[ChannelCurrentlyTypingUpdate](args[0], r.handler)
 	case "PlanetMember-Update":
 		decodeAndCall[PlanetMemberUpdate](args[0], r.handler)
+	case "PlanetMember-Delete":
+		decodeAndCall[PlanetMemberDelete](args[0], r.handler)
 	case "MessageReactionAdd":
 		decodeAndCall[MessageReactionAddedEvent](args[0], r.handler)
 	case "MessageReactionRemove":
