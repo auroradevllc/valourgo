@@ -6,6 +6,7 @@ import (
 	"os/signal"
 
 	"github.com/auroradevllc/valourgo"
+	"github.com/auroradevllc/valourgo/state"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +19,7 @@ func main() {
 		log.Fatal("No token provided")
 	}
 
-	c, err := valourgo.NewClient(token)
+	c, err := state.New(token)
 
 	if err != nil {
 		log.WithError(err).Fatal("Unable to create client")
@@ -50,6 +51,6 @@ func main() {
 	<-ch
 }
 
-func messageCreateHandler(e *valourgo.MessageCreateEvent) {
+func messageCreateHandler(e *valour.MessageCreateEvent) {
 	log.Info("Message created in planet " + e.PlanetID.String() + " by " + e.AuthorID.String() + ": " + e.Content)
 }

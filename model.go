@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 import "time"
 
@@ -45,6 +45,18 @@ type Reaction struct {
 }
 
 type ChannelType int
+
+const (
+	PlanetChat ChannelType = iota
+	PlanetCategory
+	PlanetVoice
+
+	DirectChat
+	DirectVoice
+
+	GroupChat
+	GroupVoice
+)
 
 type Channel struct {
 	ID             ChannelID       `json:"id"`

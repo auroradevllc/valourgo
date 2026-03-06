@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 import "time"
 
@@ -57,4 +57,17 @@ type MessageReactionAddedEvent struct {
 
 type MessageReactionRemovedEvent struct {
 	MessageReactionEvent
+}
+
+// PlanetJoinEvent is called when RTC "joins" a planet for updates
+type PlanetJoinEvent struct {
+	PlanetID PlanetID
+}
+
+type PlanetUpdateEvent struct {
+	Planet
+}
+
+type PlanetDeleteEvent struct {
+	PlanetID PlanetID
 }

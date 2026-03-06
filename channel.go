@@ -1,1 +1,1 @@
-package valourgo
+package valour

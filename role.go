@@ -1,4 +1,9 @@
-package valourgo
+package valour
+
+import (
+	"fmt"
+	"net/http"
+)
 
 type Role struct {
 	ID                  RoleID   `json:"id"`
@@ -16,4 +21,38 @@ type Role struct {
 	FlagBitIndex        int      `json:"flagBitIndex"`
 	AnyoneCanMention    bool     `json:"anyoneCanMention"`
 	IsAdmin             bool     `json:"isAdmin"`
+}
+
+func (n *Node) Role(planetID PlanetID, roleID RoleID) (*Role, error) {
+	var role Role
+
+	if err := n.requestJSON(http.MethodGet, planetID.Route("roles", roleID.String()), nil, &role); err != nil {
+		return nil, err
+	}
+
+	return &role, nil
+}
+
+func (n *Node) UpdateRole(planetID PlanetID, role Role) (*Role, error) {
+	var newRole Role
+
+	if err := n.requestJSON(http.MethodPut, planetID.Route("roles", role.ID.String()), role, &newRole); err != nil {
+		return nil, err
+	}
+
+	return &newRole, nil
+}
+
+func (n *Node) DeleteRole(planetID PlanetID, roleID RoleID) error {
+	res, err := n.request(http.MethodDelete, planetID.Route("roles", roleID.String()), nil)
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("unknown status: %s", res.Status)
+	}
+
+	return nil
 }

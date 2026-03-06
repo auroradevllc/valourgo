@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 import (
 	"net/http"
@@ -12,22 +12,22 @@ const (
 	apiPlanetInitialData = "initialData"
 )
 
-type Client struct {
+type BaseClient struct {
 	*Node
 	baseAddress string
 	client      *http.Client
 }
 
-type Option func(c *Client)
+type Option func(c *BaseClient)
 
 func WithBaseURL(baseURL string) Option {
-	return func(c *Client) {
+	return func(c *BaseClient) {
 		c.baseAddress = baseURL
 	}
 }
 
-func NewClient(token string, opts ...Option) (*Client, error) {
-	c := &Client{
+func NewClient(token string, opts ...Option) (Client, error) {
+	c := &BaseClient{
 		baseAddress: baseClientAddress,
 	}
 

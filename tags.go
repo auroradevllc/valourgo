@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 type Tag struct {
 	ID      int64  `json:"id"`

@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 import (
 	"strconv"
@@ -22,6 +22,10 @@ func (i Snowflake) String() string {
 	return strconv.FormatInt(int64(i), 10)
 }
 
+func (i Snowflake) IsValid() bool {
+	return i != 0
+}
+
 func (i Snowflake) Time() time.Time {
 	unixnano := time.Duration(i>>lowerBits)*time.Millisecond + Epoch
 	return time.Unix(0, int64(unixnano))
@@ -41,6 +45,10 @@ func (i PlanetID) String() string {
 	return Snowflake(i).String()
 }
 
+func (i PlanetID) IsValid() bool {
+	return Snowflake(i).IsValid()
+}
+
 func (i PlanetID) Route(path ...string) string {
 	p := []string{
 		apiPlanetBase,
@@ -58,10 +66,18 @@ func (i ChannelID) String() string {
 	return Snowflake(i).String()
 }
 
+func (i ChannelID) IsValid() bool {
+	return Snowflake(i).IsValid()
+}
+
 type UserID Snowflake
 
 func (i UserID) String() string {
 	return Snowflake(i).String()
+}
+
+func (i UserID) IsValid() bool {
+	return Snowflake(i).IsValid()
 }
 
 type MemberID Snowflake
@@ -70,10 +86,18 @@ func (i MemberID) String() string {
 	return Snowflake(i).String()
 }
 
+func (i MemberID) IsValid() bool {
+	return Snowflake(i).IsValid()
+}
+
 type MessageID Snowflake
 
 func (i MessageID) String() string {
 	return Snowflake(i).String()
+}
+
+func (i MessageID) IsValid() bool {
+	return Snowflake(i).IsValid()
 }
 
 func (i MessageID) Route(path ...string) string {
@@ -93,8 +117,16 @@ func (i RoleID) String() string {
 	return Snowflake(i).String()
 }
 
+func (i RoleID) IsValid() bool {
+	return Snowflake(i).IsValid()
+}
+
 type EmojiID Snowflake
 
 func (i EmojiID) String() string {
 	return Snowflake(i).String()
+}
+
+func (i EmojiID) IsValid() bool {
+	return Snowflake(i).IsValid()
 }

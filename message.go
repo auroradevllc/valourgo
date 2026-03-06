@@ -1,4 +1,4 @@
-package valourgo
+package valour
 
 import (
 	"encoding/json"
