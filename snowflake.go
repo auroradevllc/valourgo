@@ -16,6 +16,18 @@ const (
 	lowerBits = generatorBits + sequenceBits
 )
 
+const NullSnowflake = Snowflake(0)
+
+func ParseSnowflake(in string) (Snowflake, error) {
+	i, err := strconv.ParseUint(in, 10, 64)
+
+	if err != nil {
+		return NullSnowflake, nil
+	}
+
+	return Snowflake(i), nil
+}
+
 type Snowflake uint64
 
 func (i Snowflake) String() string {
