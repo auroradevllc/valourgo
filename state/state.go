@@ -87,6 +87,22 @@ func (s *State) Planets() ([]valour.Planet, error) {
 	return planets, err
 }
 
+func (s *State) Channel(planetID valour.PlanetID, channelID valour.ChannelID) (*valour.Channel, error) {
+	channel, err := s.Cabinet.Channel(channelID)
+
+	if err == nil {
+		return channel, nil
+	}
+
+	channel, err = s.Client.Channel(planetID, channelID)
+
+	if err == nil {
+		_ = s.Cabinet.ChannelSet(channel, false)
+	}
+
+	return channel, err
+}
+
 func (s *State) MyMember(planetID valour.PlanetID) (*valour.Member, error) {
 	me, err := s.Me()
 

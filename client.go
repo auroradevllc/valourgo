@@ -26,6 +26,7 @@ type Client interface {
 	PlanetInitialData(id PlanetID) (*PlanetInitialData, error)
 	JoinPlanet(planet PlanetID, inviteCode string) error
 
+	Channel(planetID PlanetID, channelID ChannelID) (*Channel, error)
 	Channels(id PlanetID) ([]Channel, error)
 
 	Me() (*User, error)
