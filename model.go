@@ -43,37 +43,3 @@ type Reaction struct {
 	AuthorMemberID MemberID  `json:"authorMemberId"`
 	CreatedAt      time.Time `json:"createdAt"`
 }
-
-type ChannelType int
-
-const (
-	PlanetChat ChannelType = iota
-	PlanetCategory
-	PlanetVoice
-
-	DirectChat
-	DirectVoice
-
-	GroupChat
-	GroupVoice
-)
-
-type Channel struct {
-	ID             ChannelID       `json:"id"`
-	PlanetID       PlanetID        `json:"planetId"`
-	ParentID       ChannelID       `json:"parentId"`
-	ChannelType    ChannelType     `json:"channelType"`
-	Name           string          `json:"name"`
-	Description    string          `json:"description"`
-	InheritsPerms  bool            `json:"inheritsPerms"`
-	IsDefault      bool            `json:"isDefault"`
-	RawPosition    int64           `json:"rawPosition"`
-	Position       ChannelPosition `json:"position"`
-	LastUpdateTime time.Time       `json:"lastUpdateTime"`
-}
-
-type ChannelPosition struct {
-	RawPosition   int64 `json:"rawPosition"`
-	Depth         int   `json:"depth"`
-	LocalPosition int   `json:"localPosition"`
-}
