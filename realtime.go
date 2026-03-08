@@ -93,6 +93,8 @@ func (r *RTC) defaultHandler(target string, args []json.RawMessage) {
 		decodeAndCall[PlanetUpdateEvent](args[0], r.handler)
 	case "Planet-Delete":
 		decodeAndCall[PlanetDeleteEvent](args[0], r.handler)
+	case "Channel-Update":
+		decodeAndCall[ChannelUpdateEvent](args[0], r.handler)
 	default:
 		log.WithField("target", target).Debug("No handler registered for target")
 	}

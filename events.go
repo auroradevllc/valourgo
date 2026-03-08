@@ -20,6 +20,14 @@ type ChannelCurrentlyTypingUpdate struct {
 	UserID    UserID    `json:"userId"`
 }
 
+type ChannelUpdateEvent struct {
+	Channel
+}
+
+type ChannelDeleteEvent struct {
+	Channel
+}
+
 type MessageCreateEvent struct {
 	Message
 }

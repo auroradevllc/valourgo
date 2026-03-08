@@ -103,6 +103,24 @@ func (s *State) Channel(planetID valour.PlanetID, channelID valour.ChannelID) (*
 	return channel, err
 }
 
+func (s *State) Channels(id valour.PlanetID) ([]valour.Channel, error) {
+	channels, err := s.Cabinet.Channels(id)
+
+	if err == nil {
+		return channels, nil
+	}
+
+	channels, err = s.Client.Channels(id)
+
+	if err == nil {
+		for i := range channels {
+			_ = s.Cabinet.ChannelSet(&channels[i], false)
+		}
+	}
+
+	return channels, err
+}
+
 func (s *State) MyMember(planetID valour.PlanetID) (*valour.Member, error) {
 	me, err := s.Me()
 

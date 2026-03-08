@@ -23,6 +23,12 @@ type Role struct {
 	IsAdmin             bool     `json:"isAdmin"`
 }
 
+type Roles interface {
+	Role(planetID PlanetID, roleID RoleID) (*Role, error)
+	UpdateRole(planetID PlanetID, role Role) (*Role, error)
+	DeleteRole(planetID PlanetID, roleID RoleID) error
+}
+
 func (n *Node) Role(planetID PlanetID, roleID RoleID) (*Role, error) {
 	var role Role
 

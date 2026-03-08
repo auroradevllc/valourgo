@@ -7,6 +7,18 @@ import (
 	"strings"
 )
 
+type Planets interface {
+	NodeForPlanet(planetID PlanetID) (*Node, error)
+	GetNodeNameForPlanet(planetID PlanetID) (string, error)
+	Planets() ([]Planet, error)
+	Planet(id PlanetID) (*Planet, error)
+	CreatePlanet(planet CreatePlanetData) (*Planet, error)
+	UpdatePlanet(id PlanetID, data EditPlanetData) (*Planet, error)
+	DeletePlanet(id PlanetID) error
+	PlanetInitialData(id PlanetID) (*PlanetInitialData, error)
+	JoinPlanet(planet PlanetID, inviteCode string) error
+}
+
 // Planet is Valour's representation of a server/group
 type Planet struct {
 	ID                  PlanetID `json:"id"`
@@ -128,23 +140,6 @@ func (n *Node) Planet(id PlanetID) (*Planet, error) {
 	n.planetNodeList.Set(planet.ID, planet.NodeName)
 
 	return &planet, nil
-}
-
-// Channels gets a planet's channels
-func (n *Node) Channels(id PlanetID) ([]Channel, error) {
-	var channels []Channel
-
-	node, err := n.NodeForPlanet(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	if err := node.requestJSON(http.MethodGet, id.Route("channels"), nil, &channels); err != nil {
-		return nil, err
-	}
-
-	return channels, nil
 }
 
 type CreatePlanetData struct {

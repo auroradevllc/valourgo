@@ -21,6 +21,18 @@ const (
 
 var ErrInvalidCount = errors.New("invalid message count")
 
+type Messages interface {
+	Messages(planetID PlanetID, channelID ChannelID, limit uint) ([]Message, error)
+	MessagesBefore(planetID PlanetID, channelID ChannelID, index MessageID, limit uint) ([]Message, error)
+	Message(id MessageID) (*Message, error)
+	EditMessage(id MessageID, m EditMessageData) (*Message, error)
+	DeleteMessage(id MessageID) error
+	SendMessage(planetID PlanetID, channelID ChannelID, content string) (*Message, error)
+	SendMessageComplex(planetID PlanetID, channelID ChannelID, send SendMessageData) (*Message, error)
+	MessageReactionAdd(id MessageID, emoji string) error
+	MessageReactionRemove(id MessageID, emoji string) error
+}
+
 type Message struct {
 	ID              MessageID           `json:"id"`
 	PlanetID        PlanetID            `json:"planetId"`

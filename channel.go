@@ -40,6 +40,11 @@ type ChannelPosition struct {
 	LocalPosition int   `json:"localPosition"`
 }
 
+type Channels interface {
+	Channel(planetID PlanetID, channelID ChannelID) (*Channel, error)
+	Channels(id PlanetID) ([]Channel, error)
+}
+
 func (n *Node) Channel(planetID PlanetID, channelID ChannelID) (*Channel, error) {
 	var channel Channel
 
@@ -48,4 +53,21 @@ func (n *Node) Channel(planetID PlanetID, channelID ChannelID) (*Channel, error)
 	}
 
 	return &channel, nil
+}
+
+// Channels gets a planet's channels
+func (n *Node) Channels(id PlanetID) ([]Channel, error) {
+	var channels []Channel
+
+	node, err := n.NodeForPlanet(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := node.requestJSON(http.MethodGet, id.Route("channels"), nil, &channels); err != nil {
+		return nil, err
+	}
+
+	return channels, nil
 }

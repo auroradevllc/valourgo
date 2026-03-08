@@ -23,6 +23,14 @@ func (s *State) onEvent(e interface{}) {
 		if err := s.Cabinet.PlanetRemove(ev.PlanetID); err != nil {
 			s.logError(err)
 		}
+	case *valour.ChannelUpdateEvent:
+		if err := s.Cabinet.ChannelSet(&ev.Channel, true); err != nil {
+			s.logError(err)
+		}
+	case *valour.ChannelDeleteEvent:
+		if err := s.Cabinet.ChannelRemove(&ev.Channel); err != nil {
+			s.logError(err)
+		}
 	}
 }
 
