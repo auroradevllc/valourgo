@@ -27,6 +27,17 @@ type Roles interface {
 	Role(planetID PlanetID, roleID RoleID) (*Role, error)
 	UpdateRole(planetID PlanetID, role Role) (*Role, error)
 	DeleteRole(planetID PlanetID, roleID RoleID) error
+	Roles(planetID PlanetID) ([]Role, error)
+}
+
+func (n *Node) Roles(planetID PlanetID) ([]Role, error) {
+	var roles []Role
+
+	if err := n.requestJSON(http.MethodGet, planetID.Route("roles"), nil, &roles); err != nil {
+		return nil, err
+	}
+
+	return roles, nil
 }
 
 func (n *Node) Role(planetID PlanetID, roleID RoleID) (*Role, error) {

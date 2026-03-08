@@ -121,6 +121,40 @@ func (s *State) Channels(id valour.PlanetID) ([]valour.Channel, error) {
 	return channels, err
 }
 
+func (s *State) Role(planetID valour.PlanetID, roleID valour.RoleID) (*valour.Role, error) {
+	role, err := s.Cabinet.Role(planetID, roleID)
+
+	if err == nil {
+		return role, nil
+	}
+
+	role, err = s.Client.Role(planetID, roleID)
+
+	if err == nil {
+		_ = s.Cabinet.RoleSet(role, false)
+	}
+
+	return role, err
+}
+
+func (s *State) Roles(planetID valour.PlanetID) ([]valour.Role, error) {
+	roles, err := s.Cabinet.Roles(planetID)
+
+	if err == nil {
+		return roles, nil
+	}
+
+	roles, err = s.Client.Roles(planetID)
+
+	if err == nil {
+		for i := range roles {
+			_ = s.Cabinet.RoleSet(&roles[i], false)
+		}
+	}
+
+	return roles, err
+}
+
 func (s *State) MyMember(planetID valour.PlanetID) (*valour.Member, error) {
 	me, err := s.Me()
 
