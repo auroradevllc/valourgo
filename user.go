@@ -15,3 +15,13 @@ func (n *Node) Me() (*User, error) {
 
 	return &user, nil
 }
+
+func (n *Node) User(userID UserID) (*User, error) {
+	var user User
+
+	if err := n.requestJSON(http.MethodGet, userID.Route(), nil, &user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}

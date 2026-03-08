@@ -16,16 +16,28 @@ const (
 	lowerBits = generatorBits + sequenceBits
 )
 
-const NullSnowflake = Snowflake(0)
+const (
+	NullSnowflake = Snowflake(0)
+	NullPlanetID  = PlanetID(0)
+	NullChannelID = ChannelID(0)
+	NullUserID    = UserID(0)
+	NullMemberID  = MemberID(0)
+	NullMessageID = MessageID(0)
+	NullRoleID    = RoleID(0)
+)
 
-func ParseSnowflake(in string) (Snowflake, error) {
+type SnowflakeType interface {
+	Snowflake | PlanetID | ChannelID | UserID | MemberID | MessageID | RoleID
+}
+
+func ParseSnowflake[V SnowflakeType](in string) (V, error) {
 	i, err := strconv.ParseUint(in, 10, 64)
 
 	if err != nil {
-		return NullSnowflake, nil
+		return V(0), nil
 	}
 
-	return Snowflake(i), nil
+	return V(i), nil
 }
 
 type Snowflake uint64
@@ -90,6 +102,17 @@ func (i UserID) String() string {
 
 func (i UserID) IsValid() bool {
 	return Snowflake(i).IsValid()
+}
+
+func (i UserID) Route(path ...string) string {
+	p := []string{
+		apiUserBase,
+		i.String(),
+	}
+
+	p = append(p, path...)
+
+	return strings.Join(p, "/")
 }
 
 type MemberID Snowflake

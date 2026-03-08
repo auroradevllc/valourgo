@@ -9,6 +9,7 @@ const (
 	apiBase              = "api"
 	apiPlanetBase        = apiBase + "/planets"
 	apiMessageBase       = apiBase + "/messages"
+	apiUserBase          = apiBase + "/users"
 	apiPlanetInitialData = "initialData"
 )
 
